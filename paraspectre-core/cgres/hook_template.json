@@ -1,0 +1,33 @@
+{
+  "disabled": true,
+  "eval": "",
+  "classes": [
+    {
+      "eval": "",
+
+      "name": "",
+      "extending": "",
+      "implementing": [],
+      "modifiers": [],
+
+      "methods": [
+        {
+          "name": "",
+          "returns": "",
+          "params": [],
+          "throwing": [],
+          "modifiers": [],
+          "eval_file": ""
+        }
+      ],
+      "constructors": [
+        {
+          "params": [],
+          "throwing": [],
+          "modifiers": [],
+          "eval_file": ""
+        }
+      ]
+    }
+  ]
+}

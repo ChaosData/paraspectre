@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>ParaSpectre Config Editor</title>
+    <style type="text/css" media="screen">
+      #login {
+        z-index: 10;
+        background-color: #272822;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #login-form {
+        height: 2em;
+        width: 20em;
+      }
+
+      #login-key {
+        background-color: #8F908A;
+        height: 100%;
+        width: 100%;
+        border: 0em;
+        border-radius: 10px;
+        padding: 0em;
+        text-align: center;
+      }
+
+      #login-key:focus {
+        outline: none;
+      }
+
+      #topbar {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 98%;
+        height: 5%;
+        padding: 0px 1% 0px 1%;
+
+        color: white;
+        background-color: #2e3032;
+
+        display: flex;
+        align-items: center;
+      }
+
+      #history-controls {
+        width: 4rem;
+        font-size: 2em;
+
+        display: flex;
+        justify-content: space-between;
+      }
+
+      #titlecontainer {
+        display: flex;
+        align-items: center;
+      }
+
+      #title {
+        left: 1rem;
+        position: relative;
+      }
+
+      #newfiledircontainer,
+      #newfiledirform {
+        width: 100%;
+        display: flex;
+        align-items: center;
+      }
+
+      #newfiledircontainer input[type=text] {
+        border: none;
+        background-color: #787878;
+        color: white;
+        width: 100%;
+      }
+
+      #cover {
+        position: absolute;
+        height: 1900%;
+        width: 100%;
+        top: 100%;
+        left: 0;
+        background: rgba(255, 255, 255, 0.5);
+        z-index: 100;
+      }
+
+      .filetree {
+        position: absolute;
+        top: 5%;
+        left: -1%;
+        width: 21%;
+        height: 95%;
+        overflow: scroll;
+
+        background-color: #787878;
+        font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+        color: #c0c0c0;
+      }
+
+      .filetree span {
+      }
+
+      .filetree ul,
+      .filetree li {
+        padding: 0;
+        list-style: none;
+      }
+
+      .filetree li {
+        padding: 0 0 0 5%;
+      }
+
+      .dir,
+      .file {
+        /*display: flex;
+        justify-content: space-between;
+        max-width: 92%;*/
+        white-space: nowrap;
+      }
+
+
+      .collapsed,
+      .collapsed span {
+        background-color: #272822;
+      }
+
+      /*.filetree span::before {*/
+        /*content: "- ";*/
+      /*}*/
+
+      /*.closed span::before {*/
+        /*content: "+ ";*/
+      /*}*/
+
+
+      #editor {
+        position: absolute;
+        top: 5%;
+        right: 0;
+        bottom: 0;
+        left: 20%;
+      }
+
+      .action {
+        position: absolute;
+        z-index: 1;
+        right: 3em;
+        height: 3em;
+        width: 10em;
+
+        color: #fff;
+        text-shadow: 0 -1px 0 rgba(0,0,0,0.15);
+        background-image: linear-gradient(#8add6d, #60b044);
+        border-color: #5ca941;
+        padding: 6px 12px;
+        font-family: Sans-Serif;
+        font-size: 14px;
+        font-wight: 600;
+        line-height: 20px;
+        vertical-align: middle;
+        border: 1px solid #000000; /*#d5d5d5;*/
+        border-radius: 3px;
+      }
+
+
+      #assemble {
+        bottom: 11em;
+      }
+
+      #validate {
+        bottom: 7em;
+      }
+
+      #save {
+        bottom: 3em;
+      }
+
+
+      #notification-holder {
+        z-index: 11;
+        position: absolute;
+        width: 100%;
+        bottom: 3em;
+        display: flex;
+        justify-content: center;
+        left: 0px;
+      }
+
+      #notification {
+        width: 30em;
+
+        text-shadow: 0 -1px 0 rgba(0,0,0,0.15);
+        background-color: #8F908A;
+        border-color: #5ca941;
+        padding: 6px 12px;
+        border: 1px solid #000000;
+        border-radius: 3px;
+
+        animation:notification 0.5s 1;
+        animation-fill-mode: forwards;
+
+        animation-delay:1.5s;
+      }
+
+      @keyframes notification {
+        from {opacity :1;}
+        to {opacity :0;}
+      }
+
+      #notification>p {
+        color: #fff;
+        font-family: Sans-Serif;
+        font-size: 14px;
+        font-wight: 600;
+        line-height: 20px;
+        vertical-align: middle;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="login">
+      <form id="login-form" action="https://169.254.1.1/" onsubmit="login(); return false;">
+        <input id="login-key" type="password" name="key"/>
+      </form>
+    </div>
+
+    <div id="topbar">
+      <div id="titlecontainer">
+        <span id="history-controls"><span id="undo">&lt;</span><span id="redo">&gt;</span></span>
+        <label id="title"></label>
+      </div>
+      <div id="newfiledircontainer" style="display: none;">
+        <form id="newfiledirform">
+          <label for="fileradio">F</label>
+          <input name="filedir" id="fileradio" value="f" checked="" type="radio">
+          <span>|</span>
+          <label for="dirradio">D</label>
+          <input name="filedir" id="dirradio" value="d" type="radio">
+          <span>&nbsp;</span>
+          <label for="filedirpath">Name:&nbsp;</label><input id="filedirpath" type="text">
+        </form>
+        <div id="cover"></div>
+      </div>
+    </div>
+
+    <div class="filetree">
+      <ul>
+        <li><div class="dir" data-path=""><span class="path"><span>-&nbsp;</span><span>/&nbsp;</span></span><span class="controls"><span id="rootplus" style="color: yellow;">+</span></span></div></li>
+        <li>
+          <ul id="filetree-anchor">
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div id="editor"></div>
+
+    <button id="assemble" class="action" style="display: none;" onclick="assemble(window.sessionStorage['open'], false);">Assemble!</button>
+    <!-- todo: quiet save if dirty, then assemble remote file -->
+
+    <button id="validate" class="action" style="display: none;" onclick="validate(window.sessionStorage['open'], false);">Validate!</button>
+    <!-- todo: quiet save if dirty, then validate remote file -->
+
+    <button id="save" class="action" onclick="if ('open' in window.sessionStorage && isDirty) { save(window.sessionStorage['open'], false); }">Save!</button>
+
+    <div id="notification-holder">
+    </div>
+
+    <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      const hookpathre = /^hooks\/[a-zA-Z_.]+\.json$/;
+      const metare = /^hooks\/[a-zA-Z_.]+-meta\.json$/;
+
+      document.getElementById("login-key").focus();
+
+      function loadFileDirInterface(basepath) {
+        let titlecontainer = document.getElementById("titlecontainer");
+        let newfiledircontainer = document.getElementById("newfiledircontainer");
+        newfiledircontainer.setAttribute("data-basepath", basepath);
+        titlecontainer.style.display = "none";
+        newfiledircontainer.style.display = "";
+        document.getElementById("filedirpath").focus();
+      }
+
+      function create(path) {
+        fetch('/editor/' + encodeURIComponent(path), {
+          method: 'PUT',
+          headers: new Headers({
+            "Authorization": window.sessionStorage["api_key"],
+            "Content-Type": "application/json; charset=utf-8" //no idea why charset is needed here, but it is
+          }),
+          mode: 'cors',
+          cache: "no-cache",
+          body: ''
+        })
+        .then(function(res) {
+          if(res.ok) {
+            isDirty = false;
+            notify("Created!", "#008888");
+            reloadFileTree();
+          } else {
+            notify("An error occurred.", "#880000");
+          }
+        })
+        .catch(function(error) {
+          console.log('Error: ' + error.message);
+        });
+      }
+
+
+      let newfiledirform = document.getElementById("newfiledirform");
+      newfiledirform.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        let titlecontainer = document.getElementById("titlecontainer");
+        let newfiledircontainer = document.getElementById("newfiledircontainer");
+
+        let isFile = newfiledirform.filedir.value === "f";
+        let basepath = newfiledircontainer.getAttribute("data-basepath");
+        let filedirpath = newfiledirform.filedirpath.value;
+
+        if (filedirpath !== "") {
+          let path = basepath + filedirpath;
+          if (!isFile) {
+            path += "/.gitignore";
+          }
+
+          create(path);
+          newfiledirform.filedirpath.value = "";
+
+          if (isFile) {
+            load(path);
+          }
+        }
+
+        newfiledircontainer.removeAttribute("data-basepath");
+        titlecontainer.style.display = "";
+        newfiledircontainer.style.display = "none";
+      });
+
+      let editor = ace.edit("editor");
+      editor.setTheme("ace/theme/monokai");
+      editor.getSession().setMode("ace/mode/plain_text");
+      editor.getSession().setTabSize(2);
+      let um = editor.getSession().getUndoManager();
+
+      let isDirty = false;
+
+      editor.getSession().on("change", (e) => {
+        isDirty = true;
+      });
+
+      document.getElementById("undo").addEventListener('click', (e) => {
+        um.undo();
+      }, false);
+
+      document.getElementById("redo").addEventListener('click', (e) => {
+        um.redo();
+      }, false);
+
+      editor.$blockScrolling = Infinity;
+
+      function notify(text, color, time = 2000) {
+        let h = document.getElementById("notification-holder");
+        let d = document.createElement("div");
+        let p = document.createElement("p");
+        p.textContent = text;
+        d.appendChild(p);
+        d.id = "notification";
+        d.style.backgroundColor = color;
+        h.appendChild(d);
+
+        setTimeout(function() {
+          h = document.getElementById("notification-holder");
+          [].forEach.call(h.childNodes, function(c) { h.removeChild(c); });
+          [].forEach.call(h.childNodes, function(c) { h.removeChild(c); });
+        }, time);
+      }
+
+      function login(key) {
+        init = typeof key !== 'undefined';
+        key = typeof key !== 'undefined' ?  key : document.getElementById("login-key").value;
+
+        fetch('/editor/', {
+          method: 'GET',
+          headers: new Headers({
+            "Authorization": key,
+          }),
+          mode: 'cors',
+          cache: "no-cache"
+        })
+        .then((res) => {
+          if(res.ok) {
+            res.json().then(function(json) {
+              renderFileTree(json);
+              //collapsify();
+              window.sessionStorage["api_key"] = key;
+              if ("open" in window.sessionStorage) {
+                load(window.sessionStorage["open"]);
+              }
+
+              document.body.removeChild(document.getElementById("login"));
+              notify("Loaded!", "#008888");
+            });
+          } else {
+            if (!init) {
+              notify("Invalid key.", "#880000");
+            } else {
+              window.sessionStorage.removeItem("api_key");
+            }
+          }
+        })
+        .catch(function(error) {
+          console.log('Error: ' + error.message);
+        });
+      }
+
+      function reloadFileTree() {
+        fetch('/editor/', {
+          method: 'GET',
+          headers: new Headers({
+            "Authorization": window.sessionStorage["api_key"],
+          }),
+          mode: 'cors',
+          cache: "no-cache"
+        })
+        .then((res) => {
+          if(res.ok) {
+            res.json().then(function(json) {
+              renderFileTree(json);
+            });
+          } else {
+            notify("Invalid key.", "#880000");
+          }
+        })
+        .catch(function(error) {
+          console.log('Error: ' + error.message);
+        });
+      }
+
+
+      function del(path, quiet=false) {
+        fetch('/editor/' + encodeURIComponent(path), {
+          method: 'DELETE',
+          headers: new Headers({
+            "Authorization": window.sessionStorage["api_key"],
+            "Content-Type": "application/json; charset=utf-8" //no idea why charset is needed here, but it is
+          }),
+          mode: 'cors',
+          cache: "no-cache",
+        })
+        .then(function(res) {
+          if(res.ok) {
+            if ("open" in window.sessionStorage) {
+              if (window.sessionStorage["open"].startsWith(path)) {
+                editor.setValue("");
+                window.sessionStorage.removeItem("open");
+                document.getElementById("title").innerHTML = "";
+              }
+            }
+
+            isDirty = false;
+            if (!quiet) {
+              notify("Deleted!", "#008888");
+            }
+            reloadFileTree();
+          } else {
+            notify("An error occurred.", "#880000");
+          }
+        })
+        .catch(function(error) {
+          console.log('Error: ' + error.message);
+        });
+      }
+
+      function save(path, quiet=false) {
+        fetch('/editor/' + encodeURIComponent(path), {
+          method: 'PUT',
+          headers: new Headers({
+            "Authorization": window.sessionStorage["api_key"],
+            "Content-Type": "application/json; charset=utf-8" //no idea why charset is needed here, but it is
+          }),
+          mode: 'cors',
+          cache: "no-cache",
+          body:  editor.getValue()
+        })
+        .then(function(res) {
+          if(res.ok) {
+            isDirty = false;
+            if (!quiet) {
+              notify("Saved!", "#008888");
+            }
+          } else {
+            notify("An error occurred.", "#880000");
+          }
+        })
+        .catch(function(error) {
+          console.log('Error: ' + error.message);
+        });
+      }
+
+
+      function renderFileTree(apitree) {
+        let tree = {"path": "/", "dirs":{}, "files":{}};
+
+        apitree.forEach((entry) => {
+          if (entry.path.indexOf(".git") !== -1) {
+            return;
+          }
+
+          //not just relying on "file" paths so we can handle empty dirs
+          if (entry.type === "dir") {
+            const parts = entry.path.split("/");
+            let head = tree;
+            parts.forEach((p) => {
+              if (!head["dirs"].hasOwnProperty(p)) {
+                head["dirs"][p] = {"path": entry.path, "dirs":{}, "files":{}};
+              }
+              head = head["dirs"][p];
+            });
+          } else {
+            const parts = entry.path.split("/");
+            let [f, ...ds] = parts.reverse();
+            ds = ds.reverse();
+            let head = tree;
+            ds.forEach((d) => {
+              head = head["dirs"][d];
+            });
+            head["files"][f] = entry.path;
+          }
+        });
+
+        let fta = document.getElementById("filetree-anchor");
+        fta.innerHTML = "";
+
+        document.getElementById("rootplus").addEventListener('click', (e) => {
+          console.log("dir plus: /");
+          loadFileDirInterface("");
+        });
+
+
+        let render = function render(head, headul) {
+          Object.keys(head["dirs"]).forEach((key)=> {
+            let entry = head["dirs"][key];
+            let li = document.createElement("li");
+            //li.classList.add("dir");
+            //li.style['background-color'] = "#272822";
+
+            let div = document.createElement("div");
+            {
+
+              let pathspan = document.createElement("span");
+              {
+                let typespan = document.createElement("span");
+                if (entry["dirs"].length == 0 && entry["files"].length == 0) {
+                  typespan.innerHTML = "-&nbsp;";
+                } else {
+                  typespan.innerHTML = "+&nbsp;";
+                }
+                pathspan.appendChild(typespan);
+
+                let namespan = document.createElement("span");
+                namespan.textContent = key + "/";
+                namespan.innerHTML = namespan.innerHTML + "&nbsp;";
+                pathspan.appendChild(namespan);
+                pathspan.classList.add("path");
+              }
+              div.appendChild(pathspan);
+
+              let controlsspan = document.createElement("span");
+              {
+                let plusspan = document.createElement("span");
+                plusspan.innerHTML = "+";
+                plusspan.style["color"] = "green";
+                plusspan.addEventListener('click', (e) => {
+                  console.log("dir plus: " + div.getAttribute("data-path"));
+                  loadFileDirInterface(div.getAttribute("data-path"));
+                });
+                controlsspan.appendChild(plusspan);
+
+                let pipespan = document.createElement("span");
+                pipespan.innerHTML = "|";
+                pipespan.style["color"] = "white";
+                controlsspan.appendChild(pipespan);
+
+
+                let minusspan = document.createElement("span");
+                minusspan.innerHTML = "-";
+                minusspan.style["color"] = "red";
+                minusspan.addEventListener('click', (e) => {
+                  let path = div.getAttribute("data-path");
+                  if (confirm("Are you sure you want to recursively delete /" + path + "?")) {
+                    del(path, false);
+                  }
+                });
+                controlsspan.appendChild(minusspan);
+                controlsspan.classList.add("controls");
+              }
+              div.classList.add("dir");
+              div.classList.add("collapsed");
+              div.setAttribute("data-path", entry.path + '/');
+              div.appendChild(controlsspan);
+            }
+            li.appendChild(div);
+            headul.appendChild(li);
+
+            let iliul = document.createElement("ul");
+            render(entry, iliul)
+            let ili = document.createElement("li");
+            ili.style['display'] = 'none';
+            ili.appendChild(iliul);
+            headul.appendChild(ili);
+          });
+
+          Object.keys(head["files"]).forEach((key)=> {
+            let path = head["files"][key];
+            let li = document.createElement("li");
+
+            let div = document.createElement("div");
+            {
+              let pathspan = document.createElement("span");
+              {
+                pathspan.textContent = key;
+              }
+              div.appendChild(pathspan);
+
+              let controlsspan = document.createElement("span");
+              {
+                let minusspan = document.createElement("span");
+                {
+                  minusspan.innerHTML = "&nbsp;-";
+                  minusspan.style["color"] = "red";
+                  minusspan.addEventListener('click', (e) => {
+                    let path = div.getAttribute("data-path");
+                    if (confirm("Are you sure you want to delete /" + path + "?")) {
+                      del(path, false);
+                    }
+                  });
+                  controlsspan.appendChild(minusspan);
+                }
+                controlsspan.classList.add("controls");
+              }
+              div.appendChild(controlsspan);
+
+              div.classList.add("file");
+              div.setAttribute("data-path", path);
+            }
+            li.appendChild(div);
+            headul.appendChild(li);
+          });
+        };
+
+        render(tree, fta);
+        collapsify();
+      }
+
+
+      function collapsify() {
+        let dirs = Array.from(document.getElementsByClassName("dir"));
+        dirs.forEach((e) => {
+//          console.log(e);
+//          console.log(e.childNodes);
+//          console.log(e.childNodes[0].childNodes);
+//          console.log("======");
+          e.childNodes[0].childNodes[0].addEventListener('click', (ee) => {
+            window.getSelection().removeAllRanges();
+            let n = e.parentNode.nextElementSibling;
+//            console.log(ee);
+//            console.log(e);
+//            console.log(n);
+//            console.log("=====");
+
+            if (n !== null) {
+              let dn = n.style.display === "none";
+              n.style.display = dn ? "" : "none";
+
+              if (dn) {
+                //e.style['background-color'] = "";
+                e.classList.remove("collapsed");
+                //e.classList.remove('closed');
+                e.childNodes[0].childNodes[0].textContent = "- ";
+              } else {
+                //e.style['background-color'] = "#272822";
+                e.classList.add("collapsed");
+
+                //e.classList.add('closed');
+                e.childNodes[0].childNodes[0].textContent = "+ ";
+              }
+            }
+          });
+        });
+
+        let files = Array.from(document.getElementsByClassName("file"));
+        files.forEach((e) => {
+          e.addEventListener('click', (ee) => {
+            if ("open" in window.sessionStorage && isDirty) {
+              save(window.sessionStorage["open"], true);
+            }
+
+            load(e.getAttribute("data-path"));
+          });
+        });
+      }
+
+      function load(path) {
+        fetch('/editor/' + encodeURIComponent(path), {
+          method: 'GET',
+          headers: new Headers({
+            "Authorization": window.sessionStorage["api_key"],
+          }),
+          mode: 'cors',
+          cache: "no-cache"
+        })
+        .then(function(res) {
+          if(res.ok) {
+            res.text().then(function(text) {
+              window.sessionStorage["open"] = path;
+              if (path.endsWith(".json")) {
+                editor.getSession().setMode("ace/mode/javascript");
+              } else if (path.endsWith(".rb")) {
+                editor.getSession().setMode("ace/mode/ruby");
+              } else {
+                editor.getSession().setMode("ace/mode/plain_text");
+              }
+
+              let finish = (path) => {
+                document.getElementById("title").textContent = '/' + path;
+
+                const config = "paraspectre.json" === path;
+                const hook = hookpathre.exec(path) !== null;
+                const meta = metare.exec(path) !== null;
+
+                if (config || hook || meta) {
+                  document.getElementById("validate").style.display = "";
+                } else {
+                  document.getElementById("validate").style.display = "none";
+                }
+
+                if (hook) {
+                  document.getElementById("assemble").style.display = "";
+                } else {
+                  document.getElementById("assemble").style.display = "none";
+                }
+              };
+
+              if (text == "" && path.endsWith(".json")) {
+                fetch('/template', {
+                  method: 'GET',
+                  headers: new Headers({
+                    "Authorization": window.sessionStorage["api_key"],
+                  }),
+                  mode: 'cors',
+                  cache: "no-cache"
+                })
+                .then(function(res) {
+                  if(res.ok) {
+                    res.text().then(function(templatetext) {
+                      editor.setValue(templatetext);
+                      editor.clearSelection();
+                      isDirty = false;
+                      finish(path);
+                    });
+                  }
+                });
+
+              } else {
+                editor.setValue(text);
+                editor.clearSelection();
+                isDirty = false;
+                finish(path);
+              }
+
+            });
+          } else {
+            if (res.status >= 403) {
+              //pass
+            } else if (res.status >= 404) {
+              notify("File not found.", "#880000");
+            } else if (res.status >= 500 && res.status < 600) {
+              notify("An error occurred.", "#880000");
+            }
+          }
+        })
+        .catch(function(error) {
+          console.log('Error: ' + error.message);
+        });
+      }
+
+      function validate(path, quiet=true) {
+        let body = editor.getValue();
+        if (path.endsWith(".json")) {
+          if (body.startsWith('{')) {
+            body = '_ = ' + body;
+          }
+          body = JSON.stringify(eval(body));
+        }
+
+        fetch('/validate/' + encodeURIComponent(path), {
+          method: 'POST',
+          headers: new Headers({
+            "Authorization": window.sessionStorage["api_key"],
+            "Content-Type": "application/json; charset=utf-8" //no idea why charset is needed here, but it is
+          }),
+          mode: 'cors',
+          cache: "no-cache",
+          body: body
+        })
+        .then(function(res) {
+          if(res.ok) {
+            isDirty = false;
+            if (!quiet) {
+              notify("Data Valid!", "#008888");
+            }
+          } else {
+              if (text != "") {
+                notify(text, "#880000", 5000);
+              } else {
+                notify("Data Invalid.", "#880000");
+              }
+          }
+        })
+        .catch(function(error) {
+          console.log('Error: ' + error.message);
+        });
+      }
+
+      function assemble(path, quiet=true) {
+        let body = editor.getValue();
+        if (path.endsWith(".json")) {
+          if (body.startsWith('{')) {
+            body = '_ = ' + body;
+          }
+          body = JSON.stringify(eval(body));
+        }
+
+        fetch('/assemble/' + encodeURIComponent(path), {
+          method: 'POST',
+          headers: new Headers({
+            "Authorization": window.sessionStorage["api_key"],
+            "Content-Type": "application/json; charset=utf-8" //no idea why charset is needed here, but it is
+          }),
+          mode: 'cors',
+          cache: "no-cache",
+          body: body
+        })
+        .then(function(res) {
+          if(res.ok) {
+            isDirty = false;
+            if (!quiet) {
+              notify("Assembled!", "#008888");
+            }
+            reloadFileTree();
+          } else {
+            res.text().then(function(text) {
+              if (text != "") {
+                notify(text, "#880000", 5000);
+              } else {
+                notify("An error occurred.", "#880000");
+              }
+            });
+
+          }
+        })
+        .catch(function(error) {
+          console.log('Error: ' + error.message);
+        });
+      }
+
+
+
+      if ("api_key" in window.sessionStorage) {
+        login(window.sessionStorage["api_key"]);
+      }
+
+      document.addEventListener("keydown", function(e) {
+        if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+          e.preventDefault();
+          if ("open" in window.sessionStorage) {
+            save(window.sessionStorage["open"]);
+          }
+        }
+      }, false);
+    </script>
+  </body>
+</html>

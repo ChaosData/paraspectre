@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                tools:context=".components.MainActivity"
+    >
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Server:"
+        android:id="@+id/serverLabel"
+        android:gravity="start"
+        android:layout_alignBaseline="@+id/serverToggle"
+        android:layout_alignBottom="@+id/serverToggle"
+        android:layout_alignStart="@+id/proxyLabel"/>
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New ToggleButton"
+        android:id="@+id/serverToggle"
+        android:layout_marginEnd="48dp"
+        android:checked="false"
+        android:layout_below="@+id/proxyLabel"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="42dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="API Key:"
+        android:id="@+id/apiKeyLabel"
+        android:layout_below="@+id/serverToggle"
+        android:layout_alignStart="@+id/serverLabel"
+        android:layout_marginTop="43dp"
+        android:visibility="invisible"
+        android:gravity="start"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/apiKeyView"
+        android:layout_alignTop="@+id/apiKeyLabel"
+        android:layout_alignParentEnd="true"
+        android:visibility="invisible"
+        android:textIsSelectable="true"
+        android:layout_toEndOf="@+id/apiKeyLabel"
+        android:layout_alignBottom="@+id/apiKeyLabel"
+        android:gravity="end"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Proxy:"
+        android:id="@+id/proxyLabel"
+        android:gravity="start"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="26dp"/>
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/proxyToggle"
+        android:checked="false"
+        android:layout_alignBaseline="@+id/proxyLabel"
+        android:layout_alignBottom="@+id/proxyLabel"
+        android:layout_alignStart="@+id/serverToggle"/>
+
+    <CheckBox
+        android:id="@+id/is_optimized"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:layout_marginStart="24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/serverToggle"
+        android:layout_marginBottom="50dp"/>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/serverLabel"
+        android:layout_alignTop="@+id/is_optimized"
+        android:text="Optimized:"
+        android:textAppearance="@android:style/TextAppearance.Material.Large"
+        />
+
+</RelativeLayout>

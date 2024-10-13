@@ -1,0 +1,77 @@
+apply plugin: 'java'
+
+//to build: ./gradlew jar
+
+buildscript {
+    dependencies {
+        classpath files('../paraspectre-codegen/build/libs/paraspectre-codegen-all.jar')
+    }
+}
+
+apply plugin: trust.nccgroup.paraspectre.codegen.InternerPlugin
+
+
+def pscodgenSrcDir = new File(buildDir, "generated/pscodegen/src/main/java/")
+
+interner {
+  in_dir = new File(projectDir, "cgres")
+  out_dir = pscodgenSrcDir
+
+  ext = "json"
+
+  pkg = "trust.nccgroup.paraspectre.core.generated"
+  name = "JsonTemplate"
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+
+/*
+import trust.nccgroup.paraspectre.core.codegen.JsonInterner
+
+def pscodgenSrcDir = new File(buildDir, "generated/pscodegen/src/main/java/")
+
+task generateJsonTemplateStrings {
+  JsonInterner.generateJsonTemplateStrings(pscodgenSrcDir)
+}
+
+if (isJavaProject(project)) {
+  compileJava.dependsOn generateJsonTemplateStrings
+} else if (isAndroidProject(project)) {
+  preBuild.dependsOn generateJsonTemplateStrings
+}
+*/
+
+repositories {
+  maven {
+    url "https://repo1.maven.org/maven2"
+  }
+}
+
+dependencies {
+  compile group: 'co.trikita', name: 'log', version: '1.1.5'
+}
+
+
+sourceSets {
+  main {
+    java {
+      //srcDirs = ['./src']
+      srcDirs = ['./src', pscodgenSrcDir]
+    }
+
+    resources {
+      srcDirs = ['./res']
+    }
+  }
+}
+
+public static boolean isJavaProject(Project project) {
+  project.plugins.findPlugin('java')
+}
+
+public static boolean isAndroidProject(Project project) {
+  project.plugins.findPlugin('com.android.application') ||
+  project.plugins.findPlugin('com.android.library')
+}

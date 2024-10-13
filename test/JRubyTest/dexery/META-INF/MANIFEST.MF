@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: dex2jar (HELP! I'm trapped in a ZipFactoryImpl factory)
+Dex-Location: classes.dex
+

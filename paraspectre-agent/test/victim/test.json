@@ -1,0 +1,19 @@
+{
+  "net": {
+    "host": "127.0.0.1",
+    "port": 4444
+  },
+  "targets": [
+    {
+      "name": "JTester",
+      "methods": [
+        {
+          "name": "secretSauce",
+          "returns": "java.lang.String",
+          "params": ["java.lang.String", "int"],
+          "eval": "a = 5"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Tester</string>
+    <string name="some_string"><![CDATA[<insert text here>]]></string>
+</resources>

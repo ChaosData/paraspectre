@@ -1,0 +1,34 @@
+{
+  "net": {
+    "daemon": {
+      "host": "127.0.0.1",
+      "port": 4444
+    },
+    "webapp": {
+      "host": "127.0.0.1",
+      "port": 8088
+    },
+    "pinger": {
+      "host": "127.0.0.1",
+      "port": 4446
+    }
+  },
+  "matchers": [
+    {
+      "classes": [
+        {
+          "name": "JTester",
+          "methods": [
+            {
+              "name": "secretSauce",
+              "returns": "java.lang.String",
+              "params": ["java.lang.String", "int"],
+              "eval": "a = a*2; b = b*3; puts a; puts b; #return method.invoke(this, args) + ' #YOLO';\n"
+            }
+          ],
+          "eval": "a = 5+5; b = 10*2"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+include ':app', ':jdruby'
+
+include ':core'
+project(':core').projectDir = new File('../paraspectre-core')
+
+include ':webapp'
+project(':webapp').projectDir = new File('../paraspectre-webapp')
+
+include ':parasect'
+project(':parasect').projectDir = new File('../experiments/parasect')

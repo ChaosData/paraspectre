@@ -1,0 +1,158 @@
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.List;
+
+import net.bytebuddy.asm.Advice;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.agent.ByteBuddyAgent;
+import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.description.NamedElement;
+import net.bytebuddy.description.modifier.Visibility;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.ClassFileLocator;
+import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.dynamic.loading.ClassInjector;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.dynamic.loading.ClassReloadingStrategy;
+import net.bytebuddy.implementation.*;
+import net.bytebuddy.implementation.bind.annotation.*;
+import net.bytebuddy.implementation.bytecode.Throw;
+import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatchers;
+import net.bytebuddy.utility.JavaModule;
+
+
+class JTester {
+
+  public static interface Tester {
+    public String doStuff(String a);
+  }
+
+  public static class ATester implements Tester {
+
+    @Override
+    public String doStuff(String a) {
+      System.out.println(a);
+      return "";
+    }
+  }
+
+  public String secretSauce(String a, int b) {
+  //public String secretSauce(String a, Integer b) {
+    try {
+      throw new Exception();
+    } catch (Throwable t) {
+      StackTraceElement[] ste_arr = t.getStackTrace();
+      for (StackTraceElement ste : ste_arr) {
+        System.out.println(ste);
+      }
+/*
+
+JTester.secretSauce$original$2iz0HPlQ(JTester.java:6)
+JTester.secretSauce$original$2iz0HPlQ$accessor$vmaqLl8T(JTester.java)
+JTester$auxiliary$Ml9tKgvA.invoke(Unknown Source)
+trust.nccgroup.paraspectre.agent.PreMain$Interceptor.real_intercept(PreMain.java:50)
+trust.nccgroup.paraspectre.agent.PreMain$Interceptor.intercept(PreMain.java:58)
+JTester.secretSauce(JTester.java)
+JTester.main(JTester.java:19)
+hello55
+
+*/
+
+/*
+
+JTester.secretSauce(JTester.java:6)
+JTester.main(JTester.java:19)
+hello55
+
+*/
+
+    }
+
+    return a + b;
+  }
+
+  public String secretSauce2(String a, int b) {
+    try {
+      throw new Exception();
+    } catch (Throwable t) {
+      StackTraceElement[] ste_arr = t.getStackTrace();
+      for (StackTraceElement ste : ste_arr) {
+        System.out.println(ste);
+      }
+    }
+    return a + b;
+  }
+
+  public static class MyAdvice {
+    @Advice.OnMethodEnter
+    static void foo() {
+      System.out.println("foo");
+    }
+
+    @Advice.OnMethodExit
+    static void bar() {
+      System.out.println("bar");
+    }
+  }
+
+/*
+  public static class TestTransformer implements AgentBuilder.Transformer {
+    @Override
+    public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader) {
+      System.out.println("============");
+      System.out.println(typeDescription.getName());
+      System.out.println(typeDescription.getCanonicalName());
+      System.out.println(typeDescription.getSimpleName());
+      if(typeDescription.getCanonicalName() == null) {
+        return null;
+      }
+      return builder.visit(Advice.to(MyAdvice.class).on(ElementMatchers.named("getRuntimeMXBean")));
+    }
+  }
+*/
+  public static void main(String[] argv) {
+/*
+    RuntimeMXBean runtimeMxBean1 = ManagementFactory.getRuntimeMXBean();
+    new AgentBuilder.Default()
+        .disableClassFormatChanges()
+        .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
+        //.type(ElementMatchers.any())//.and(ElementMatchers.not(ElementMatchers.nameContains("JTester"))))
+        .type(ElementMatchers.isSubTypeOf(ManagementFactory.class))
+        .transform(new TestTransformer())
+        .installOnByteBuddyAgent();
+*/
+
+
+
+
+
+
+    JTester j = new JTester();
+    System.out.println(j.secretSauce("hell0", 55));
+    System.out.println(j.secretSauce2("world", 66));
+
+    ATester a = new ATester();
+    a.doStuff("hi there");
+
+    RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+    List<String> arguments = runtimeMxBean.getInputArguments();
+    for (String argument : arguments) {
+      System.out.println(argument);
+      if (argument.startsWith("-javaagent:")) {
+        System.out.println("Agent loaded!");
+      }
+    }
+
+    try {
+      Class.forName("trust.nccgroup.paraspectre.agent.PreMain");
+      System.out.println("Agent loaded!");
+    } catch (ClassNotFoundException e) {
+      System.out.println("Agent not loaded.");
+      e.printStackTrace();
+    }
+
+    System.out.println("->end");
+  }
+
+}

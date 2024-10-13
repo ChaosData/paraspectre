@@ -1,0 +1,105 @@
+apply plugin: 'com.android.application'
+//apply plugin: 'com.mutualmobile.gradle.plugins.dexinfo'
+
+buildscript {
+    dependencies {
+        classpath files('../../paraspectre-codegen/build/libs/paraspectre-codegen-all.jar')
+    }
+}
+
+apply plugin: trust.nccgroup.paraspectre.codegen.InternerPlugin
+
+
+def pscodgenSrcDir = new File(buildDir, "generated/pscodegen/src/main/java/")
+
+interner {
+    in_dir = new File(projectDir, "cgres")
+    out_dir = pscodgenSrcDir
+
+    ext = "rb"
+
+    pkg = "trust.nccgroup.paraspectre.android.generated"
+    name = "RubyCode"
+}
+
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '26.0.1'
+
+    sourceSets {
+        main {
+            java {
+                srcDirs += pscodgenSrcDir
+            }
+        }
+    }
+
+    dexOptions {
+        preDexLibraries = false
+        javaMaxHeapSize "2g"
+    }
+
+    defaultConfig {
+        applicationId "trust.nccgroup.paraspectre.android"
+        minSdkVersion 21
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+
+        multiDexEnabled false
+    }
+    buildTypes {
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            //minifyEnabled true
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/INDEX.LIST'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+repositories {
+    maven {
+        url "https://repo1.maven.org/maven2"
+    }
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+
+    compile group: 'com.google.android.tools', name: 'dx', version: '1.7'
+    provided files('provided/XposedBridgeApi-54.jar')
+
+    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.2.+'
+    compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.2.+'
+
+    compile group: 'com.google.code.gson', name: 'gson', version: '+'
+    compile group: 'com.google.guava', name:'guava', version:'20.0'
+
+    compile group: 'org.jooq', name: 'joor', version: '0.9.6+'
+
+    compile 'eu.chainfire:libsuperuser:1.0.0.+'
+
+    compile project(':core')
+    compile project(':webapp')
+    //compile project(':parasect')
+}

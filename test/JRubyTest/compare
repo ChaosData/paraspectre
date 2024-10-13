@@ -1,0 +1,13 @@
+java -cp :/system/framework/XposedBridge.jar org.jruby.Main
+E/NCC     (20323): loader: dalvik.system.PathClassLoader[DexPathList[[zip file "/data/app/trust.nccgroup.jrubytest-1/base.apk"],nativeLibraryDirectories=[/vendor/lib, /system/lib]]]
+E/NCC     (20323): RubyInstanceConfig.class.getClassLoader(): dalvik.system.PathClassLoader[DexPathList[[zip file "/data/app/trust.nccgroup.jrubytest-1/base.apk"],nativeLibraryDirectories=[/vendor/lib, /system/lib]]]
+E/NCC     (20323): Thread.currentThread().getContextClassLoader(): dalvik.system.PathClassLoader[DexPathList[[zip file "/data/app/trust.nccgroup.jrubytest-1/base.apk"],nativeLibraryDirectories=[/vendor/lib, /system/lib]]]
+
+java -cp :/system/framework/XposedBridge.jar org.jruby.Main
+E/NCC     (20895): loader: dalvik.system.PathClassLoader[DexPathList[[zip file "/data/app/trust.nccgroup.jrubytest-2/base.apk"],nativeLibraryDirectories=[/vendor/lib, /system/lib]]]
+E/NCC     (20895): config.getClass().getClassLoader(): dalvik.system.PathClassLoader[DexPathList[[zip file "/data/data/trust.nccgroup.jrubytest/files/jruby-complete.dex.jar"],nativeLibraryDirectories=[/vendor/lib, /system/lib, /vendor/lib, /system/lib]]]
+E/NCC     (20895): Thread.currentThread().getContextClassLoader(): dalvik.system.PathClassLoader[DexPathList[[zip file "/data/app/trust.nccgroup.jrubytest-2/base.apk"],nativeLibraryDirectories=[/vendor/lib, /system/lib]]]
+E/NCC     (20895): loader: dalvik.system.PathClassLoader[DexPathList[[zip file "/data/data/trust.nccgroup.jrubytest/files/jruby-complete.dex.jar"],nativeLibraryDirectories=[/vendor/lib, /system/lib, /vendor/lib, /system/lib]]]
+E/NCC     (20895): config.getClass().getClassLoader(): dalvik.system.PathClassLoader[DexPathList[[zip file "/data/data/trust.nccgroup.jrubytest/files/jruby-complete.dex.jar"],nativeLibraryDirectories=[/vendor/lib, /system/lib, /vendor/lib, /system/lib]]]
+E/NCC     (20895): Thread.currentThread().getContextClassLoader(): dalvik.system.PathClassLoader[DexPathList[[zip file "/data/app/trust.nccgroup.jrubytest-2/base.apk"],nativeLibraryDirectories=[/vendor/lib, /system/lib]]]
+

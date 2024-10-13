@@ -1,0 +1,45 @@
+apply plugin: 'java'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:+'
+    }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+
+repositories {
+  maven {
+    url "https://repo1.maven.org/maven2"
+  }
+}
+
+dependencies {
+
+}
+
+
+sourceSets {
+  main {
+    java {
+      srcDirs = ['./']
+    }
+
+    resources {
+      srcDirs = ['./res']
+    }
+  }
+}
+
+
+jar {
+   manifest {
+       attributes 'Main-Class': 'JTester'
+   }
+}
+
+defaultTasks "shadowJar"

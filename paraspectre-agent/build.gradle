@@ -1,0 +1,70 @@
+apply plugin: 'java'
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+
+  //noinspection GroovyAssignabilityCheck
+  dependencies {
+    classpath 'com.github.jengelman.gradle.plugins:shadow:+'
+  }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+
+repositories {
+  maven {
+    url "https://repo1.maven.org/maven2"
+  }
+}
+
+
+//noinspection GroovyAssignabilityCheck
+dependencies {
+  compile files('../paraspectre-core/build/libs/paraspectre-core.jar')
+
+  compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.4.33' //note: newer versions break stuff
+  compile group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.4.33'
+
+  compile group: 'com.google.code.gson', name: 'gson', version: '+'
+  compile group: 'com.google.guava', name:'guava', version:'+'
+  compile group: 'co.trikita', name: 'log', version: '1.1.5'
+
+  compile group: 'org.apache.commons', name:'commons-lang3', version:'+'
+  //compile group: 'org.javassist', name: 'javassist', version: '3.20.0-GA'
+
+  compile files('./jruby-complete-1.7.26.jar')
+
+
+}
+
+//noinspection GroovyAssignabilityCheck
+sourceSets {
+  //noinspection GroovyAssignabilityCheck
+  main {
+    java {
+      srcDirs = ['./src']
+    }
+
+    resources {
+      srcDirs = ['./res']
+    }
+  }
+}
+
+//noinspection GroovyAssignabilityCheck
+jar {
+  manifest {
+    attributes (
+      "Manifest-Version": "1.0",
+      "Can-Redefine-Classes": "true",
+      "Can-Retransform-Classes": "true",
+      "Can-Set-Native-Method-Prefix": "true",
+      "Premain-Class": "trust.nccgroup.paraspectre.agent.PreMain"
+    )
+  }
+}
+
+defaultTasks "shadowJar"

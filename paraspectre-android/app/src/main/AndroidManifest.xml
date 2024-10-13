@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="trust.nccgroup.paraspectre.android"
+          android:installLocation="internalOnly">
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!--
+         note: need to reboot w/ Xposed hook enabled and reinstall the app
+         afterwards to bootstrap this permission
+    -->
+    <uses-permission android:name="android.permission.GRANT_RUNTIME_PERMISSIONS"/>
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:name=".components.ParaspectreApplication">
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true"/>
+        <meta-data
+            android:name="xposeddescription"
+            android:value="ParaSpectre"/>
+        <meta-data
+            android:name="xposedminversion"
+            android:value="54"/>
+
+        <service
+            android:name=".components.ConfigService"
+            android:enabled="true"
+            android:exported="false"/>
+
+        <receiver
+            android:name=".components.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".components.MainActivity"
+            android:label="@string/title_activity_main">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".components.WebAppService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
+        <service
+            android:name=".components.ParasectService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
+        <service
+            android:name=".components.NetGrantService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+    </application>
+
+</manifest>

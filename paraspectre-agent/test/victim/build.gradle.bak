@@ -1,0 +1,47 @@
+apply plugin: 'java'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:+'
+    }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+
+repositories {
+  maven {
+    url "https://repo1.maven.org/maven2"
+  }
+}
+
+dependencies {
+  compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.4.3'
+  compile group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.4.3'
+
+}
+
+
+sourceSets {
+  main {
+    java {
+      srcDirs = ['./']
+    }
+
+    resources {
+      srcDirs = ['./res']
+    }
+  }
+}
+
+
+jar {
+   manifest {
+       attributes 'Main-Class': 'JTester'
+   }
+}
+
+defaultTasks "shadowJar"

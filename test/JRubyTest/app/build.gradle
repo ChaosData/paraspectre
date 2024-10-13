@@ -1,0 +1,57 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "24.0.0"
+
+    defaultConfig {
+        applicationId "trust.nccgroup.jrubytest"
+        minSdkVersion 21
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+
+    }
+    buildTypes {
+        release {
+
+            //minifyEnabled true
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    packagingOptions {
+        pickFirst "META-INF/LICENSE.RUBY"
+        pickFirst "META-INF/BSDL"
+        pickFirst "META-INF/LEGAL"
+        pickFirst "META-INF/COPYING"
+
+        pickFirst "META-INF/BCKEY.SF"
+        pickFirst "META-INF/BCKEY.DSA"
+    }
+}
+
+repositories {
+    maven {
+        url "https://repo1.maven.org/maven2"
+    }
+}
+
+
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:multidex:1.0.1'
+
+    compile group: 'org.jooq', name: 'joor', version: '0.9.6'
+
+    //provided group: 'org.jruby', name: 'jruby-core', version: '9.1.2.0'
+    //provided group: 'org.jruby', name: 'jruby-stdlib', version: '9.1.2.0'
+
+    provided group: 'org.jruby', name: 'jruby-complete', version: '1.7.+'
+    //compile group: 'org.jruby', name: 'jruby-complete', version: '1.7.+'
+
+}

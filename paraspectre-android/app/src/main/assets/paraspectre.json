@@ -1,0 +1,27 @@
+{
+  "net": {
+    "webapp": {
+      "host": "127.0.0.1",
+      "port": 8088
+    },
+    "pinger": {
+      "host": "127.0.0.1",
+      "port": 4442
+    },
+    "forwarder": {
+      "host": "127.0.0.1",
+      "port": 4444
+    },
+    "reverse": {
+      "host": "127.0.0.1",
+      "port": 4445
+    },
+    "remote": {
+      "host": "127.0.0.1",
+      "port": 4446
+    }
+  },
+  "matchers": [
+
+  ]
+}

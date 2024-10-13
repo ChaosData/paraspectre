@@ -1,0 +1,5 @@
+- add matcher: throws
+- rename matchers: to better fit w/ java syntax
+- update ui: adding reflash jruby as one button
+- pretty print matches for use in json, maybe write in local files dir
+  - config to enable

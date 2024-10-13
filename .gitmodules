@@ -1,0 +1,3 @@
+[submodule "paraspectre-android/dexery/pry-remote"]
+	path = paraspectre-android/dexery/pry-remote
+	url = https://github.com/ChaosData/pry-remote

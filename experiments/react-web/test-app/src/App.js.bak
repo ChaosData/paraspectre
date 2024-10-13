@@ -1,0 +1,168 @@
+import React, { Component } from 'react';
+import './App.css';
+
+// using ES6 modules
+import { BrowserRouter, Route, Link, Switch, Redirect, withRouter } from 'react-router-dom'
+
+//const server_url = 'http://127.0.0.1:8088/';
+
+class LoginPane extends Component {
+  state = {
+    redirect: false
+  }
+
+  login = () => {
+    auth.authenticate(() => {
+      this.setState({ redirect: true })
+    })
+  }
+
+
+  render() {
+    if (this.state.redirect) {
+      const defaultLocation = {
+        state: {
+          from: {
+            pathname: "/"
+          }
+        }
+      };
+      const location = this.props.location || defaultLocation;
+      const state = location.state || defaultLocation.state;
+      const from = state.from || defaultLocation.state.from;
+      return (
+        <Redirect to={from}/>
+      )
+    }
+
+    return (
+      <div>
+        <h2>Login</h2>
+        <button onClick={this.login}>Log in</button>
+      </div>
+    )
+  }
+}
+
+class FourOhFour extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return <h1>Not Found</h1>;
+  }
+}
+
+const auth = {
+  isAuthenticated: false,
+
+  authenticate(cb) {
+    this.isAuthenticated = true
+    setTimeout(cb, 100) // fake async
+  },
+  signout(cb) {
+    this.isAuthenticated = false
+    setTimeout(cb, 100)
+  }
+}
+
+const AuthButton = withRouter(({ history }) => (
+  auth.isAuthenticated ? (
+    <p>
+      Welcome! <button onClick={() => {
+        auth.signout(() => history.go(0))
+      }}>Sign out</button>
+    </p>
+  ) : (
+    <p>You are not logged in.</p>
+  )
+))
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={props => {
+    return (
+        auth.isAuthenticated ? (
+        <Component {...props}/>
+      ) : (
+        <Redirect to={{
+          pathname: '/login',
+          state: { from: props.location }
+        }}/>
+      )
+    )
+  }}
+  />
+)
+
+const public_routes = [
+  { path: '/login',
+    exact: true,
+    main: (props) => <LoginPane {...props}/>
+  },
+
+  //must be last
+  { path: '/:404',
+    main: (props) => <FourOhFour {...props}/>
+  }
+]
+
+const private_routes = [
+  { path: '/',
+    exact: true,
+    main: () => <h2>Home</h2>
+  },
+  { path: '/bubblegum',
+    main: () => <h2>Bubblegum</h2>
+  },
+  { path: '/shoelaces',
+    main: () => <h2>Shoelaces</h2>
+  }
+]
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      authenticated: false
+    }
+  }
+
+  setAuthenticated = (state) => {
+    console.log("isAuthenticated");
+    this.state.pushState({
+      authenticated: state
+    })
+  }
+
+  render() {
+    return (
+      <BrowserRouter>
+        <div>
+          <AuthButton/>
+          <Switch>
+            {private_routes.map((route, index) => (
+            <PrivateRoute
+              key={index}
+              path={route.path}
+              exact={route.exact || false}
+              component={route.main}
+            />
+            ))}
+            {public_routes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              exact={route.exact || false}
+              component={route.main}
+            />
+            ))}
+          </Switch>
+        </div>
+      </BrowserRouter>
+    )
+  }
+}
+
+
+export default App;
